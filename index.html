@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OKAY / NOT?</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  </head>
+  <style>
+    @import url("https://fonts.googleapis.com/css?family=IBM+Plex+Mono:300,400,500,600,700|IBM+Plex+Sans:300,400,500,600,700&display=swap");
+    html {
+      margin: 0px;
+      height: 100%;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      background-color: black;
+      color: white;
+      padding: 0 1.5rem;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .left-header-text {
+      width: 20%;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .right-header-text {
+      font-weight: 300;
+      font-size: 0.8rem;
+      letter-spacing: 0.1rem;
+      padding-bottom: 0.1rem;
+      border-bottom: 2px solid white;
+    }
+
+    a {
+      color: white;
+      text-decoration: none;
+    }
+
+    body {
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: 10px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      -webkit-transition: opacity 2s ease-out;
+      -moz-transition: opacity 2s ease-out;
+      -o-transition: opacity 2s ease-out;
+      -ms-transition: opacity 2s ease-out;
+      transition: opacity 2s ease-out;
+      margin: 0px;
+      min-height: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    section {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding-top: 5%;
+    }
+
+    .no-transition {
+      -webkit-transition: none !important;
+      -o-transition: none !important;
+      transition: none !important;
+    }
+
+    .stackedcards-overflow {
+      overflow-y: hidden !important;
+    }
+
+    .stackedcards.init {
+      opacity: 0; /* set the opacity to 0 if you want a fade-in effect to stacked cards on page load */
+    }
+
+    .stackedcards {
+      position: relative;
+    }
+
+    .stackedcards * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .stackedcards--animatable {
+      -webkit-transition: all 400ms ease;
+      -o-transition: all 400ms ease;
+      transition: all 400ms ease;
+    }
+
+    .stackedcards .stackedcards-container > *,
+    .stackedcards-overlay {
+      position: absolute;
+      width: 100%; /* set 100% */
+      height: 50vh; /* set 100% */
+      will-change: transform, opacity;
+      top: 0;
+      border-radius: 10px;
+    }
+
+    .stackedcards-overlay.left > div,
+    .stackedcards-overlay.right > div,
+    .stackedcards-overlay.top > div {
+      width: 100%;
+      height: 100%;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+    }
+
+    .stackedcards-overlay.left,
+    .stackedcards-overlay.right,
+    .stackedcards-overlay.top {
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      left: 0;
+      opacity: 0;
+      top: 0;
+      height: 100%;
+      font-size: 1rem; /* this style was added only for better preview */
+      text-transform: uppercase; /* this style was added only for better preview */
+      font-weight: 500; /* this style was added only for better preview */
+      color: #fff; /* this style was added only for better preview */
+    }
+
+    .stackedcards-overlay.right {
+      background: #333333;
+    }
+
+    .stackedcards-overlay.left {
+      background: #000000;
+    }
+
+    .stackedcards-overlay.left:empty,
+    .stackedcards-overlay.right:empty,
+    .stackedcards-overlay.top:empty {
+      display: none !important;
+    }
+
+    .stackedcards-overlay-hidden {
+      display: none;
+    }
+
+    .stackedcards-origin-bottom {
+      -webkit-transform-origin: bottom;
+      -ms-transform-origin: bottom;
+      transform-origin: bottom;
+    }
+
+    .stackedcards-origin-top {
+      -webkit-transform-origin: top;
+      -ms-transform-origin: top;
+      transform-origin: top;
+    }
+
+    .stackedcards-bottom,
+    .stackedcards-top,
+    .stackedcards-none {
+      height: 100%;
+      background: #000000;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    .stackedcards .stackedcards-container > :nth-child(1) {
+      position: relative;
+      display: block;
+    }
+
+    /* global actions buttons*/
+    .global-actions {
+      display: -webkit-inline-box;
+      display: -ms-inline-flexbox;
+      display: inline-flex;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .top-action,
+    .right-action,
+    .left-action {
+      width: 100%;
+      height: 15vh;
+      line-height: 2em;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      font-weight: 500;
+      color: #fff;
+      font-size: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-action {
+      background: #e38568;
+      margin: 0 10px;
+    }
+
+    .right-action {
+      background: #333333;
+    }
+    .left-action {
+      background: #000000;
+    }
+
+    .card-item {
+      background: black;
+      color: white;
+      font-size: 1rem;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .center-text {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 75%;
+      letter-spacing: 0.1em;
+      padding: 0 15%;
+      font-family: IBM Plex Mono;
+    }
+
+    .okay-or-not {
+      color: grey;
+      padding: 0 15%;
+      font-size: 0.8rem;
+    }
+  </style>
+  <body>
+    <header>
+      <p class="left-header-text" onclick="window.location.href='home.html'">
+        OKAY / NOT?
+      </p>
+      <p class="right-header-text">
+        <a href="story.html">SUBMIT YOUR STORY</a>
+      </p>
+    </header>
+    <section>
+      <div style="width: 65%">
+        <div
+          id="stacked-cards-block"
+          class="stackedcards stackedcards--animatable init"
+        >
+          <div class="stackedcards-container">
+            <div class="card-item">
+              <div class="center-text">
+                "It's better if you stay away from the Mainland Chinese, if not
+                later you also catch coronavirus"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "You're pretty accomplished for a Malay. What did you do
+                differently?"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "The minority groups are quite sensitive about race. They should
+                just relax"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "We should prioritise translating this brochure into Chinese as
+                it would cost too much to translate this into Tamil and Malay"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                Speaking in Mandarin when there is a non-Mandarin speaking
+                person present in the group
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is this okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "Chinese-preferred for this job"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "Not my fault if the other person takes offense when I didn't
+                intend to be racist!"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                Speaking in Malay when there is a non-Malay speaking person
+                present in the group
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is this okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "You really Singaporean meh? You don't look like it"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "I bet the Nasi Padang stall is charging me more because I'm not
+                Malay"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "You're not like most Indians I meet"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "My Chinese friends gauge their success by their material
+                wealth"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "Eating with Malays is usually difficult because we need to find
+                Halal food"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "I don't want my children to marry someone of another race"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+
+            <div class="card-item">
+              <div class="center-text">
+                "Because we are a meritocracy, all races have an equal chance of
+                succeeding at life"
+              </div>
+              <img src="grey-horizontal-straight-line.png" width="100px" />
+              <p class="okay-or-not">
+                Is the above statement okay or not?
+              </p>
+            </div>
+          </div>
+          <div class="stackedcards--animatable stackedcards-overlay top">
+            TOP
+          </div>
+          <div class="stackedcards--animatable stackedcards-overlay right">
+            okay!
+          </div>
+          <div class="stackedcards--animatable stackedcards-overlay left">
+            not okay.
+          </div>
+        </div>
+      </div>
+    </section>
+    <div
+      style="
+      color: grey; 
+      text-align: center; 
+      font-size: 0.8rem; 
+      font-weight: 500;
+      line-height: 2.5rem;
+      "
+      id="counter"
+    >
+      1/15
+    </div>
+    <div class="global-actions">
+      <div class="left-action">
+        <span>
+          not okay.
+        </span>
+        <img src="arrow.png" width="15%" style="transform: rotate(180deg);" />
+      </div>
+      <div class="right-action">
+        <span>
+          okay!
+        </span>
+        <img src="arrow.png" width="15%" />
+      </div>
+    </div>
+  </body>
+  <script>
+    const answers = [];
+    // JavaScript Document
+    document.addEventListener("DOMContentLoaded", function(event) {
+      function stackedCards() {
+        var stackedOptions = "Top"; //Change stacked cards view from 'Bottom', 'Top' or 'None'.
+        var rotate = true; //Activate the elements' rotation for each move on stacked cards.
+        var items = 3; //Number of visible elements when the stacked options are bottom or top.
+        var elementsMargin = 10; //Define the distance of each element when the stacked options are bottom or top.
+        var useOverlays = true; //Enable or disable the overlays for swipe elements.
+        var maxElements; //Total of stacked cards on DOM.
+        var currentPosition = 0; //Keep the position of active stacked card.
+        var velocity = 0.3; //Minimum velocity allowed to trigger a swipe.
+        var topObj; //Keep the swipe top properties.
+        var rightObj; //Keep the swipe right properties.
+        var leftObj; //Keep the swipe left properties.
+        var listElNodesObj; //Keep the list of nodes from stacked cards.
+        var listElNodesWidth; //Keep the stacked cards width.
+        var currentElementObj; //Keep the stacked card element to swipe.
+        var stackedCardsObj;
+        var isFirstTime = true;
+        var elementHeight;
+        var obj;
+        var elTrans;
+
+        obj = document.getElementById("stacked-cards-block");
+        stackedCardsObj = obj.querySelector(".stackedcards-container");
+        listElNodesObj = stackedCardsObj.children;
+
+        topObj = obj.querySelector(".stackedcards-overlay.top");
+        rightObj = obj.querySelector(".stackedcards-overlay.right");
+        leftObj = obj.querySelector(".stackedcards-overlay.left");
+
+        countElements();
+        currentElement();
+        listElNodesWidth = stackedCardsObj.offsetWidth;
+        currentElementObj = listElNodesObj[0];
+        updateUi();
+
+        //Prepare elements on DOM
+        addMargin = elementsMargin * (items - 1) + "px";
+
+        if (stackedOptions === "Top") {
+          for (i = items; i < maxElements; i++) {
+            listElNodesObj[i].classList.add(
+              "stackedcards-top",
+              "stackedcards--animatable",
+              "stackedcards-origin-top"
+            );
+          }
+
+          elTrans = elementsMargin * (items - 1);
+
+          stackedCardsObj.style.marginBottom = addMargin;
+        } else if (stackedOptions === "Bottom") {
+          for (i = items; i < maxElements; i++) {
+            listElNodesObj[i].classList.add(
+              "stackedcards-bottom",
+              "stackedcards--animatable",
+              "stackedcards-origin-bottom"
+            );
+          }
+
+          elTrans = 0;
+
+          stackedCardsObj.style.marginBottom = addMargin;
+        } else if (stackedOptions === "None") {
+          for (i = items; i < maxElements; i++) {
+            listElNodesObj[i].classList.add(
+              "stackedcards-none",
+              "stackedcards--animatable"
+            );
+          }
+
+          elTrans = 0;
+        }
+
+        for (i = items; i < maxElements; i++) {
+          listElNodesObj[i].style.zIndex = 0;
+          listElNodesObj[i].style.opacity = 0;
+          listElNodesObj[i].style.webkitTransform =
+            "scale(" +
+            (1 - items * 0.04) +
+            ") translateX(0) translateY(" +
+            elTrans +
+            "px) translateZ(0)";
+          listElNodesObj[i].style.transform =
+            "scale(" +
+            (1 - items * 0.04) +
+            ") translateX(0) translateY(" +
+            elTrans +
+            "px) translateZ(0)";
+        }
+
+        if (listElNodesObj[currentPosition]) {
+          listElNodesObj[currentPosition].classList.add("stackedcards-active");
+        }
+
+        if (useOverlays) {
+          leftObj.style.transform =
+            "translateX(0px) translateY(" +
+            elTrans +
+            "px) translateZ(0px) rotate(0deg)";
+          leftObj.style.webkitTransform =
+            "translateX(0px) translateY(" +
+            elTrans +
+            "px) translateZ(0px) rotate(0deg)";
+
+          rightObj.style.transform =
+            "translateX(0px) translateY(" +
+            elTrans +
+            "px) translateZ(0px) rotate(0deg)";
+          rightObj.style.webkitTransform =
+            "translateX(0px) translateY(" +
+            elTrans +
+            "px) translateZ(0px) rotate(0deg)";
+
+          topObj.style.transform =
+            "translateX(0px) translateY(" +
+            elTrans +
+            "px) translateZ(0px) rotate(0deg)";
+          topObj.style.webkitTransform =
+            "translateX(0px) translateY(" +
+            elTrans +
+            "px) translateZ(0px) rotate(0deg)";
+        } else {
+          leftObj.className = "";
+          rightObj.className = "";
+          topObj.className = "";
+
+          leftObj.classList.add("stackedcards-overlay-hidden");
+          rightObj.classList.add("stackedcards-overlay-hidden");
+          topObj.classList.add("stackedcards-overlay-hidden");
+        }
+
+        //Remove class init
+        setTimeout(function() {
+          obj.classList.remove("init");
+        }, 150);
+
+        function backToMiddle() {
+          removeNoTransition();
+          transformUi(0, 0, 1, currentElementObj);
+
+          if (useOverlays) {
+            transformUi(0, 0, 0, leftObj);
+            transformUi(0, 0, 0, rightObj);
+            transformUi(0, 0, 0, topObj);
+          }
+
+          setZindex(5);
+
+          if (!(currentPosition >= maxElements)) {
+            //roll back the opacity of second element
+            if (currentPosition + 1 < maxElements) {
+              listElNodesObj[currentPosition + 1].style.opacity = ".8";
+            }
+          }
+        }
+
+        // Usable functions
+        function countElements() {
+          maxElements = listElNodesObj.length;
+          if (items > maxElements) {
+            items = maxElements;
+          }
+        }
+
+        //Keep the active card.
+        function currentElement() {
+          currentElementObj = listElNodesObj[currentPosition];
+        }
+
+        //Functions to swipe left elements on logic external action.
+        function onActionLeft() {
+          if (!(currentPosition >= maxElements)) {
+            if (useOverlays) {
+              leftObj.classList.remove("no-transition");
+              topObj.classList.remove("no-transition");
+              leftObj.style.zIndex = "8";
+              transformUi(0, 0, 1, leftObj);
+            }
+
+            setTimeout(function() {
+              onSwipeLeft();
+              resetOverlayLeft();
+            }, 300);
+          }
+        }
+
+        //Functions to swipe right elements on logic external action.
+        function onActionRight() {
+          if (!(currentPosition >= maxElements)) {
+            if (useOverlays) {
+              rightObj.classList.remove("no-transition");
+              topObj.classList.remove("no-transition");
+              rightObj.style.zIndex = "8";
+              transformUi(0, 0, 1, rightObj);
+            }
+
+            setTimeout(function() {
+              onSwipeRight();
+              resetOverlayRight();
+            }, 300);
+          }
+        }
+
+        //Swipe active card to left.
+        function onSwipeLeft() {
+          removeNoTransition();
+          transformUi(-1000, 0, 0, currentElementObj);
+          if (useOverlays) {
+            transformUi(-1000, 0, 0, leftObj); //Move leftOverlay
+            transformUi(-1000, 0, 0, topObj); //Move topOverlay
+            resetOverlayLeft();
+          }
+          answers.push("F");
+          currentPosition = currentPosition + 1;
+          updateUi();
+          currentElement();
+          setActiveHidden();
+        }
+
+        //Swipe active card to right.
+        function onSwipeRight() {
+          removeNoTransition();
+          transformUi(1000, 0, 0, currentElementObj);
+          if (useOverlays) {
+            transformUi(1000, 0, 0, rightObj); //Move rightOverlay
+            transformUi(1000, 0, 0, topObj); //Move topOverlay
+            resetOverlayRight();
+          }
+          answers.push("T");
+          currentPosition = currentPosition + 1;
+          updateUi();
+          currentElement();
+          setActiveHidden();
+        }
+        function incrementCounter() {
+          const currValue = document.getElementById("counter").innerText;
+          const number = parseInt(currValue.split("/")[0]);
+          document.getElementById("counter").innerText = `${number + 1}/15`;
+        }
+        //Remove transitions from all elements to be moved in each swipe movement to improve perfomance of stacked cards.
+        function removeNoTransition() {
+          if (listElNodesObj[currentPosition]) {
+            if (useOverlays) {
+              leftObj.classList.remove("no-transition");
+              rightObj.classList.remove("no-transition");
+              topObj.classList.remove("no-transition");
+            }
+
+            listElNodesObj[currentPosition].classList.remove("no-transition");
+            listElNodesObj[currentPosition].style.zIndex = 6;
+          }
+        }
+
+        //Move the overlay left to initial position.
+        function resetOverlayLeft() {
+          if (!(currentPosition >= maxElements)) {
+            if (useOverlays) {
+              setTimeout(function() {
+                if (stackedOptions === "Top") {
+                  elTrans = elementsMargin * (items - 1);
+                } else if (
+                  stackedOptions === "Bottom" ||
+                  stackedOptions === "None"
+                ) {
+                  elTrans = 0;
+                }
+
+                if (!isFirstTime) {
+                  leftObj.classList.add("no-transition");
+                  topObj.classList.add("no-transition");
+                }
+
+                requestAnimationFrame(function() {
+                  leftObj.style.transform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  leftObj.style.webkitTransform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  leftObj.style.opacity = "0";
+
+                  topObj.style.transform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  topObj.style.webkitTransform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  topObj.style.opacity = "0";
+                });
+              }, 300);
+
+              isFirstTime = false;
+            }
+          }
+        }
+
+        //Move the overlay right to initial position.
+        function resetOverlayRight() {
+          if (!(currentPosition >= maxElements)) {
+            if (useOverlays) {
+              setTimeout(function() {
+                if (stackedOptions === "Top") {
+                  +2;
+
+                  elTrans = elementsMargin * (items - 1);
+                } else if (
+                  stackedOptions === "Bottom" ||
+                  stackedOptions === "None"
+                ) {
+                  elTrans = 0;
+                }
+
+                if (!isFirstTime) {
+                  rightObj.classList.add("no-transition");
+                  topObj.classList.add("no-transition");
+                }
+
+                requestAnimationFrame(function() {
+                  rightObj.style.transform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  rightObj.style.webkitTransform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  rightObj.style.opacity = "0";
+
+                  topObj.style.transform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  topObj.style.webkitTransform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  topObj.style.opacity = "0";
+                });
+              }, 300);
+
+              isFirstTime = false;
+            }
+          }
+        }
+
+        //Move the overlays to initial position.
+        function resetOverlays() {
+          if (!(currentPosition >= maxElements)) {
+            if (useOverlays) {
+              setTimeout(function() {
+                if (stackedOptions === "Top") {
+                  elTrans = elementsMargin * (items - 1);
+                } else if (
+                  stackedOptions === "Bottom" ||
+                  stackedOptions === "None"
+                ) {
+                  elTrans = 0;
+                }
+
+                if (!isFirstTime) {
+                  leftObj.classList.add("no-transition");
+                  rightObj.classList.add("no-transition");
+                  topObj.classList.add("no-transition");
+                }
+
+                requestAnimationFrame(function() {
+                  leftObj.style.transform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  leftObj.style.webkitTransform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  leftObj.style.opacity = "0";
+
+                  rightObj.style.transform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  rightObj.style.webkitTransform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  rightObj.style.opacity = "0";
+
+                  topObj.style.transform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  topObj.style.webkitTransform =
+                    "translateX(0) translateY(" + elTrans + "px) translateZ(0)";
+                  topObj.style.opacity = "0";
+                });
+              }, 300); // wait for animations time
+
+              isFirstTime = false;
+            }
+          }
+        }
+
+        function setActiveHidden() {
+          if (!(currentPosition >= maxElements)) {
+            incrementCounter();
+
+            listElNodesObj[currentPosition - 1].classList.remove(
+              "stackedcards-active"
+            );
+            // listElNodesObj[currentPosition - 1].style.display = "none";
+            listElNodesObj[currentPosition].classList.add(
+              "stackedcards-active"
+            );
+          } else {
+            document.body.style.opacity = 0;
+            const queryParams = answers
+              .map((el, index) => `${index}=${el}`)
+              .join("&");
+
+            setTimeout(function() {
+              window.location.href = `almost_done.html?${queryParams}`;
+            }, 2500);
+          }
+        }
+
+        //Set the new z-index for specific card.
+        function setZindex(zIndex) {
+          if (listElNodesObj[currentPosition]) {
+            listElNodesObj[currentPosition].style.zIndex = zIndex;
+          }
+        }
+
+        // Remove element from the DOM after swipe. To use this method you need to call this function in onSwipeLeft and onSwipeRight and put the method just above the variable 'currentPosition = currentPosition + 1'.
+        //On the actions onSwipeLeft and onSwipeRight you need to remove the currentPosition variable (currentPosition = currentPosition + 1) and the function setActiveHidden
+
+        function removeElement() {
+          currentElementObj.remove();
+          if (!(currentPosition >= maxElements)) {
+            listElNodesObj[currentPosition].classList.add(
+              "stackedcards-active"
+            );
+          }
+        }
+
+        //Add translate X and Y to active card for each frame.
+        function transformUi(moveX, moveY, opacity, elementObj) {
+          requestAnimationFrame(function() {
+            var element = elementObj;
+
+            // Function to generate rotate value
+            function RotateRegulator(value) {
+              if (value / 10 > 15) {
+                return 15;
+              } else if (value / 10 < -15) {
+                return -15;
+              }
+              return value / 10;
+            }
+
+            if (rotate) {
+              rotateElement = RotateRegulator(moveX);
+            } else {
+              rotateElement = 0;
+            }
+
+            if (stackedOptions === "Top") {
+              elTrans = elementsMargin * (items - 1);
+              if (element) {
+                element.style.webkitTransform =
+                  "translateX(" +
+                  moveX +
+                  "px) translateY(" +
+                  (moveY + elTrans) +
+                  "px) translateZ(0) rotate(" +
+                  rotateElement +
+                  "deg)";
+                element.style.transform =
+                  "translateX(" +
+                  moveX +
+                  "px) translateY(" +
+                  (moveY + elTrans) +
+                  "px) translateZ(0) rotate(" +
+                  rotateElement +
+                  "deg)";
+                element.style.opacity = opacity;
+              }
+            } else if (
+              stackedOptions === "Bottom" ||
+              stackedOptions === "None"
+            ) {
+              if (element) {
+                element.style.webkitTransform =
+                  "translateX(" +
+                  moveX +
+                  "px) translateY(" +
+                  moveY +
+                  "px) translateZ(0) rotate(" +
+                  rotateElement +
+                  "deg)";
+                element.style.transform =
+                  "translateX(" +
+                  moveX +
+                  "px) translateY(" +
+                  moveY +
+                  "px) translateZ(0) rotate(" +
+                  rotateElement +
+                  "deg)";
+                element.style.opacity = opacity;
+              }
+            }
+          });
+        }
+
+        //Action to update all elements on the DOM for each stacked card.
+        function updateUi() {
+          requestAnimationFrame(function() {
+            elTrans = 0;
+            var elZindex = 5;
+            var elScale = 1;
+            var elOpac = 1;
+            var elTransTop = items;
+            var elTransInc = elementsMargin;
+
+            for (i = currentPosition; i < currentPosition + items; i++) {
+              if (listElNodesObj[i]) {
+                if (stackedOptions === "Top") {
+                  listElNodesObj[i].classList.add(
+                    "stackedcards-top",
+                    "stackedcards--animatable",
+                    "stackedcards-origin-top"
+                  );
+
+                  if (useOverlays) {
+                    leftObj.classList.add("stackedcards-origin-top");
+                    rightObj.classList.add("stackedcards-origin-top");
+                    topObj.classList.add("stackedcards-origin-top");
+                  }
+
+                  elTrans = elTransInc * elTransTop;
+                  elTransTop--;
+                } else if (stackedOptions === "Bottom") {
+                  listElNodesObj[i].classList.add(
+                    "stackedcards-bottom",
+                    "stackedcards--animatable",
+                    "stackedcards-origin-bottom"
+                  );
+
+                  if (useOverlays) {
+                    leftObj.classList.add("stackedcards-origin-bottom");
+                    rightObj.classList.add("stackedcards-origin-bottom");
+                    topObj.classList.add("stackedcards-origin-bottom");
+                  }
+
+                  elTrans = elTrans + elTransInc;
+                } else if (stackedOptions === "None") {
+                  listElNodesObj[i].classList.add(
+                    "stackedcards-none",
+                    "stackedcards--animatable"
+                  );
+                  elTrans = elTrans + elTransInc;
+                }
+
+                listElNodesObj[i].style.transform =
+                  "scale(" +
+                  elScale +
+                  ") translateX(0) translateY(" +
+                  (elTrans - elTransInc) +
+                  "px) translateZ(0)";
+                listElNodesObj[i].style.webkitTransform =
+                  "scale(" +
+                  elScale +
+                  ") translateX(0) translateY(" +
+                  (elTrans - elTransInc) +
+                  "px) translateZ(0)";
+                listElNodesObj[i].style.opacity = elOpac;
+                listElNodesObj[i].style.zIndex = elZindex;
+
+                elScale = elScale - 0.04;
+                elOpac = elOpac - 1 / items;
+                elZindex--;
+              }
+            }
+          });
+        }
+
+        //Touch events block
+        var element = obj;
+        var startTime;
+        var startX;
+        var startY;
+        var translateX;
+        var translateY;
+        var currentX;
+        var currentY;
+        var touchingElement = false;
+        var timeTaken;
+        var topOpacity;
+        var rightOpacity;
+        var leftOpacity;
+
+        function setOverlayOpacity() {
+          topOpacity = ((translateY + elementHeight / 2) / 100) * -1;
+          rightOpacity = translateX / 100;
+          leftOpacity = (translateX / 100) * -1;
+
+          if (topOpacity > 1) {
+            topOpacity = 1;
+          }
+
+          if (rightOpacity > 1) {
+            rightOpacity = 1;
+          }
+
+          if (leftOpacity > 1) {
+            leftOpacity = 1;
+          }
+        }
+
+        function gestureStart(evt) {
+          startTime = new Date().getTime();
+
+          startX = evt.changedTouches[0].clientX;
+          startY = evt.changedTouches[0].clientY;
+
+          currentX = startX;
+          currentY = startY;
+
+          setOverlayOpacity();
+
+          touchingElement = true;
+          if (!(currentPosition >= maxElements)) {
+            if (listElNodesObj[currentPosition]) {
+              listElNodesObj[currentPosition].classList.add("no-transition");
+              setZindex(6);
+
+              if (useOverlays) {
+                leftObj.classList.add("no-transition");
+                rightObj.classList.add("no-transition");
+                topObj.classList.add("no-transition");
+              }
+
+              if (currentPosition + 1 < maxElements) {
+                listElNodesObj[currentPosition + 1].style.opacity = "1";
+              }
+
+              elementHeight = listElNodesObj[currentPosition].offsetHeight / 3;
+            }
+          }
+        }
+
+        function gestureMove(evt) {
+          currentX = evt.changedTouches[0].pageX;
+          currentY = evt.changedTouches[0].pageY;
+
+          translateX = currentX - startX;
+          translateY = currentY - startY;
+
+          setOverlayOpacity();
+
+          if (!(currentPosition >= maxElements)) {
+            evt.preventDefault();
+            transformUi(translateX, translateY, 1, currentElementObj);
+
+            if (useOverlays) {
+              transformUi(translateX, translateY, topOpacity, topObj);
+
+              if (translateX < 0) {
+                transformUi(translateX, translateY, leftOpacity, leftObj);
+                transformUi(0, 0, 0, rightObj);
+              } else if (translateX > 0) {
+                transformUi(translateX, translateY, rightOpacity, rightObj);
+                transformUi(0, 0, 0, leftObj);
+              }
+
+              if (useOverlays) {
+                leftObj.style.zIndex = 8;
+                rightObj.style.zIndex = 8;
+                topObj.style.zIndex = 7;
+              }
+            }
+          }
+        }
+
+        function gestureEnd(evt) {
+          if (!touchingElement) {
+            return;
+          }
+
+          translateX = currentX - startX;
+          translateY = currentY - startY;
+
+          timeTaken = new Date().getTime() - startTime;
+
+          touchingElement = false;
+
+          if (!(currentPosition >= maxElements)) {
+            if (translateX < 0) {
+              if (
+                translateX < (listElNodesWidth / 2) * -1 ||
+                Math.abs(translateX) / timeTaken > velocity
+              ) {
+                // Did It Move To Left?
+                onSwipeLeft();
+              } else {
+                backToMiddle();
+              }
+            } else if (translateX > 0) {
+              if (
+                translateX > listElNodesWidth / 2 &&
+                Math.abs(translateX) / timeTaken > velocity
+              ) {
+                // Did It Move To Right?
+                onSwipeRight();
+              } else {
+                backToMiddle();
+              }
+            }
+          }
+        }
+
+        element.addEventListener("touchstart", gestureStart, false);
+        element.addEventListener("touchmove", gestureMove, false);
+        element.addEventListener("touchend", gestureEnd, false);
+
+        //Add listeners to call global action for swipe cards
+        var buttonLeft = document.querySelector(".left-action");
+        var buttonRight = document.querySelector(".right-action");
+
+        buttonLeft.addEventListener("click", onActionLeft, false);
+        buttonRight.addEventListener("click", onActionRight, false);
+      }
+
+      stackedCards();
+    });
+    function mobilecheck() {
+      var check = false;
+      (function(a) {
+        if (
+          /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
+            a
+          ) ||
+          /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
+            a.substr(0, 4)
+          )
+        )
+          check = true;
+      })(navigator.userAgent || navigator.vendor || window.opera);
+      return check;
+    }
+    window.onload = function() {
+      if (!mobilecheck()) {
+        window.location.href = "landing_page.html";
+      }
+    };
+  </script>
+</html>
